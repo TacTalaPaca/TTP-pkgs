@@ -6,18 +6,18 @@ Repository base URL: **https://pkgs.tactalapaca.com**
 
 Source and packaging scripts: **https://github.com/TacTalaPaca/TTP-pkgs** (public)
 
-Supported: Debian/Ubuntu (`.deb`), Fedora/RHEL/openSUSE (`.rpm`), Arch
+Supported: Debian/Ubuntu (`.deb`), Fedora/RHEL (`.rpm`), Arch
 (`.pkg.tar.zst`). Architectures: `x86_64` / `amd64`.
 
 ## Install the repository
 
-One command, auto-detects your distribution:
+One command; it detects your distribution:
 
 ```bash
 curl -fsSL https://pkgs.tactalapaca.com/setup/install.sh | sudo bash
 ```
 
-Remove it just as cleanly:
+Remove it:
 
 ```bash
 curl -fsSL https://pkgs.tactalapaca.com/setup/uninstall.sh | sudo bash
@@ -29,8 +29,7 @@ Removing the repository does **not** uninstall software that came from it.
 
 ## Manual setup
 
-Prefer not to pipe a script into `bash`? These are the exact steps the
-installer performs.
+Prefer to do it manually? These are the same steps.
 
 ### Debian / Ubuntu / Mint / Pop!_OS
 
@@ -60,6 +59,15 @@ If `config-manager` is missing: `sudo dnf install -y dnf5-plugins`.
 
 ### RHEL / Rocky / AlmaLinux (DNF4)
 
+On RHEL 9 / AlmaLinux 9 / Rocky 9, enable EPEL first (it provides
+`libcloudproviders`):
+
+```bash
+sudo dnf install -y epel-release
+```
+
+Then add the repository:
+
 ```bash
 sudo dnf install -y dnf-plugins-core
 sudo dnf config-manager --add-repo https://pkgs.tactalapaca.com/rpm/ttp-pkgs.repo
@@ -70,19 +78,6 @@ Remove (both DNF versions):
 ```bash
 sudo rm -f /etc/yum.repos.d/ttp-pkgs.repo
 sudo dnf clean all
-```
-
-### openSUSE / SLES
-
-```bash
-sudo zypper addrepo -f https://pkgs.tactalapaca.com/rpm/ttp-pkgs.repo
-sudo zypper --gpg-auto-import-keys refresh
-```
-
-Remove:
-
-```bash
-sudo zypper removerepo ttp-pkgs
 ```
 
 ### Arch / EndeavourOS / Manjaro
@@ -129,20 +124,17 @@ curl -fsSL https://pkgs.tactalapaca.com/keys/ttp-pkgs.asc | gpg --show-keys --wi
 ```
 <!-- KEY:END -->
 
-Every repository index is signed with this key. Packages are protected by the
-checksums in those signed indexes (RPM packages are individually signed as
-well).
+The indexes are signed with this key. RPM packages are also signed
+individually.
 
 ---
 
 ## Uninstalling packages
 
-Removing the repository does not touch installed software. Use your package
-manager:
+Use your package manager:
 
 ```bash
 sudo apt purge <package>       # Debian/Ubuntu
 sudo dnf remove <package>      # Fedora/RHEL
-sudo zypper remove <package>   # openSUSE
 sudo pacman -Rns <package>     # Arch
 ```

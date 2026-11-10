@@ -1,6 +1,6 @@
 # TTP-pkgs — setup plan
 
-Current state and remaining work, updated after the rename to TTP-pkgs on 2026-11-10.
+Status, verification and maintenance notes.
 
 ## Naming
 
@@ -31,13 +31,14 @@ Current state and remaining work, updated after the rename to TTP-pkgs on 2026-1
 - [x] rclone remote `ttp-pkgs:` configured and verified
 - [x] Firegila 0.1.3 published (`deb`, `rpm`, `pacman`)
 - [x] Fixed Firegila Arch deps: `libgbm` -> `mesa`, dropped `at-spi2-atk`
-- [x] Real-client tests: Debian 13, Fedora 45, Arch Linux
+- [x] Real-client tests: Debian 13, Fedora 45, RHEL 9 (with EPEL), Arch Linux
 - [x] Public GitHub repo `TacTalaPaca/TTP-pkgs` created and pushed
 
 ## Verified
 
 - Debian 13: `apt-get update`, `apt-cache policy`, `apt-get download`, `apt-get install -s`
 - Fedora 45: key auto-import, `dnf download --resolve` (286 packages)
+- RHEL 9 (AlmaLinux): resolves fully with EPEL (196 packages)
 - Arch: `pacman -Si`, `pacman -Sp` (105 packages), `pacman -Sw`
 - Live signatures: APT `InRelease`, RPM `repomd.xml`, pacman `ttp-pkgs.db`
 - `Cache-Control: no-cache`, `cf-cache-status: DYNAMIC`
@@ -59,10 +60,9 @@ Current state and remaining work, updated after the rename to TTP-pkgs on 2026-1
 
 ## Notes
 
-- `tactalapaca.com` and `www` stay on Cloudflare Pages; only the `pkgs` subdomain is added.
-- The Cloudflare MCP session has R2 + DNS edit, but **no API Tokens Write**, so the
-  rclone token is created manually in the dashboard.
-- Secrets never live in this repository: the private GPG key stays in `~/.gnupg`,
-  the R2 secret stays in `~/.config/rclone/rclone.conf` (mode 600).
-- R2 free tier: 10 GB-month, free egress. Use `./scripts/prune.sh <package> <keep>`
-  to drop old versions.
+- `tactalapaca.com` and `www` stay on Cloudflare Pages; only `pkgs` is added.
+- Secrets stay outside the repo: the private GPG key in `~/.gnupg`, the R2 secret
+  in `~/.config/rclone/rclone.conf` (mode 600).
+- R2 free tier: 10 GB-month, free egress.
+- RPM targets Fedora and RHEL. openSUSE needs a separate RPM because its package
+  names differ.

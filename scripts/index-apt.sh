@@ -29,6 +29,7 @@ main() {
   require_cmd dpkg-deb
   require_cmd dpkg-scanpackages
   require_cmd gzip
+  require_cmd stat
   if [[ -n "${KEY_ID:-}" ]]; then require_cmd gpg; fi
 
   local apt_dir="$REPO_DIR/apt"

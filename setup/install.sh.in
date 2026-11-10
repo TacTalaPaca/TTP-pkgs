@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Add the TTP pkgs package repository to this system.
+# Add the TTP pkgs repository to this system.
 set -euo pipefail
 
 BASE_URL="@BASE_URL@"
@@ -53,17 +53,11 @@ case "$IDS" in
     dnf -q clean all >/dev/null 2>&1 || true
     # Import the repo key and validate metadata immediately.
     dnf -y makecache >/dev/null
-    ;;
-
-  *suse*|*opensuse*)
-    echo "==> openSUSE/SUSE family detected"
-    REPO_URL="$BASE_URL/rpm/$REPO_NAME.repo"
-    if ! zypper --non-interactive addrepo -f "$REPO_URL" 2>/dev/null; then
-      if ! zypper --non-interactive modifyrepo -f "$REPO_NAME" 2>/dev/null; then
-        curl -fsSL "$REPO_URL" -o "/etc/zypp/repos.d/$REPO_NAME.repo"
-      fi
+    if ! dnf -q repoquery --available --qf '%{name}' libcloudproviders 2>/dev/null \
+      | grep -qx libcloudproviders; then
+      echo "Note: RHEL/Rocky/Alma need EPEL for libcloudproviders:" >&2
+      echo "      dnf install -y epel-release" >&2
     fi
-    zypper --non-interactive --gpg-auto-import-keys refresh
     ;;
 
   *arch*|*manjaro*|*endeavouros*)
@@ -90,11 +84,11 @@ EOF
 
   *)
     echo "Unsupported distribution: ${PRETTY_NAME:-unknown}" >&2
-    echo "Supported: Debian/Ubuntu, Fedora/RHEL, openSUSE/SUSE, Arch." >&2
+    echo "Supported: Debian/Ubuntu, Fedora/RHEL, Arch." >&2
     exit 1
     ;;
 esac
 
 echo
 echo "Repository '$REPO_NAME' added."
-echo "Install software with the normal package manager (apt / dnf / zypper / pacman)."
+echo "Install packages with your package manager."

@@ -23,7 +23,6 @@ PACKAGES_DIR="$ROOT_DIR/packages"
 REPO_DIR="$ROOT_DIR/repo"
 KEYS_DIR="$ROOT_DIR/keys"
 SETUP_DIR="$ROOT_DIR/setup"
-TMP_DIR="$ROOT_DIR/.tmp"
 
-# Public signing key served at $BASE_URL/keys/$REPO_NAME.asc
+# Published as $BASE_URL/keys/<repo>.asc
 KEY_FILE="$KEYS_DIR/$REPO_NAME.asc"

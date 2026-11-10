@@ -1,13 +1,7 @@
-# ---------------------------------------------------------------------------
-# Generated repository tree. Published to Cloudflare R2, never committed.
-# GitHub blocks files larger than 100 MiB, so package binaries must stay out.
-# ---------------------------------------------------------------------------
+# Generated repository tree (published to R2).
 repo/
 
-# ---------------------------------------------------------------------------
-# Staged build artifacts (incoming packages). Local drop zone only: the whole
-# directory is ignored. publish.sh creates it if it does not exist.
-# ---------------------------------------------------------------------------
+# Local drop zone for build artifacts.
 packages/
 
 # Local scratch space

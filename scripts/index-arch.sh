@@ -41,7 +41,7 @@ main() {
 
     log "Building Arch index for $arch (${#pkgs[@]} package(s))"
 
-    # Full rebuild so removed/renamed packages cannot linger in the database.
+    # Rebuild from scratch to avoid stale entries.
     rm -f \
       "$dir/$REPO_NAME.db" "$dir/$REPO_NAME.db.sig" \
       "$dir/$REPO_NAME.files" "$dir/$REPO_NAME.files.sig" \
@@ -54,8 +54,7 @@ main() {
       repo-add -q "$db" "${pkgs[@]}"
     fi
 
-    # Cloudflare R2 (and any static host) cannot serve symlinks. Replace the
-    # repo-add symlinks with real files under the names pacman actually fetches.
+    # R2 cannot serve symlinks; pacman fetches the non-tarball names.
     rm -f "$dir/$REPO_NAME.db" "$dir/$REPO_NAME.db.sig" \
           "$dir/$REPO_NAME.files" "$dir/$REPO_NAME.files.sig"
     cp -f "$db" "$dir/$REPO_NAME.db"

@@ -14,9 +14,8 @@ KEY_EXPIRE="${KEY_EXPIRE:-2y}"
 require_cmd gpg
 mkdir -p "$KEYS_DIR"
 
-# Generate the key. In a normal terminal gpg can use its usual pinentry.
-# When run without a controlling TTY (for example from an automation shell),
-# fall back to a zenity password dialog and gpg loopback mode.
+# Use the normal pinentry in a terminal; otherwise ask with zenity and use
+# gpg's loopback mode.
 _quick_gen_key() {
   if [[ -t 0 ]]; then
     gpg --quick-gen-key "$KEY_UID" "$KEY_ALGO" sign "$KEY_EXPIRE"
@@ -41,9 +40,13 @@ _quick_gen_key() {
     --quick-gen-key "$KEY_UID" "$KEY_ALGO" sign "$KEY_EXPIRE"
 }
 
+_fingerprint() {
+  gpg --list-secret-keys --with-colons "$KEY_UID" 2>/dev/null \
+    | awk -F: '/^fpr:/{print $10; exit}'
+}
+
 # Reuse an existing secret key with the same UID if there is one.
-FPR="$(gpg --list-secret-keys --with-colons "$KEY_UID" 2>/dev/null \
-  | awk -F: '/^fpr:/{print $10; exit}' || true)"
+FPR="$(_fingerprint || true)"
 
 if [[ -n "$FPR" ]]; then
   log "Using existing signing key: $FPR"
@@ -51,29 +54,23 @@ else
   log "Creating $KEY_ALGO signing key for: $KEY_UID"
   info "You will be asked for a passphrase. Use a long one and store it safely."
   _quick_gen_key
-
-  FPR="$(gpg --list-secret-keys --with-colons "$KEY_UID" 2>/dev/null \
-    | awk -F: '/^fpr:/{print $10; exit}' || true)"
+  FPR="$(_fingerprint || true)"
   [[ -n "$FPR" ]] || die "key generation failed"
 fi
 
 gpg --armor --export "$FPR" > "$KEY_FILE"
 chmod 0644 "$KEY_FILE"
 
+log "Public key written: ${KEY_FILE#$ROOT_DIR/}"
 cat <<EOF
-
-$(log "Public key written: ${KEY_FILE#$ROOT_DIR/}")
 
   Fingerprint: $FPR
 
-Next steps:
-  1. Back up the PRIVATE key offline (then delete the file):
-       gpg --armor --export-secret-keys $FPR > ~/ttp-pkgs-private-key.asc
+Back up the private key offline:
+  gpg --armor --export-secret-keys $FPR > ~/ttp-pkgs-private-key.asc
 
-  2. Configure Cloudflare R2:
-       ./scripts/init-r2.sh
-
-  3. Publish your first packages:
-       ./scripts/publish.sh --sync
+Next:
+  ./scripts/init-r2.sh          # only if rclone is not configured
+  ./scripts/publish.sh --sync
 
 EOF

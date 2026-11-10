@@ -13,8 +13,8 @@ Usage: $(basename "$0") [options] [PACKAGE_DIR ...]
 
 Copies .deb / .rpm / .pkg.tar.* files from PACKAGE_DIR (default:
 packages/<app>/<version>/) into repo/, rebuilds the APT, RPM and pacman
-indexes, signs the metadata, regenerates README.md, and optionally uploads
-the whole repository to Cloudflare R2.
+indexes, signs packages and metadata, regenerates README.md, and optionally
+uploads the repository to Cloudflare R2.
 
 Options:
   --sync       upload repo/ to Cloudflare R2 when done
@@ -77,8 +77,6 @@ _render() {
 }
 
 _render_setup() {
-  mkdir -p "$REPO_DIR/keys" "$REPO_DIR/setup" "$REPO_DIR/rpm"
-
   if [[ -f "$KEY_FILE" ]]; then
     install -m 0644 "$KEY_FILE" "$REPO_DIR/keys/$REPO_NAME.asc"
   fi
@@ -108,8 +106,6 @@ main() {
   require_cmd dpkg-deb
   require_cmd rpm
   require_cmd pacman
-  require_cmd gzip
-  require_cmd stat
   require_cmd sed
 
   if [[ "$unsigned" -eq 1 ]]; then
