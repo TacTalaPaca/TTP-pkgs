@@ -135,22 +135,23 @@ sudo pacman -Sy
 <!-- PACKAGES:END -->
 
 These are normal system packages. Install one with your package manager.
-Replace `firegila` with the package name from the table:
+`<package>` is a placeholder; use the name from the table (for example,
+`firegila`):
 
 ```bash
-sudo apt install firegila        # Debian-based
-sudo dnf install firegila        # Fedora/RHEL-based
-sudo zypper install firegila     # SUSE-based
-sudo pacman -S firegila          # Arch-based
+sudo apt install <package>        # Debian-based
+sudo dnf install <package>        # Fedora/RHEL-based
+sudo zypper install <package>     # SUSE-based
+sudo pacman -S <package>          # Arch-based
 ```
 
 Uninstall it the same way:
 
 ```bash
-sudo apt remove firegila         # Debian-based
-sudo dnf remove firegila         # Fedora/RHEL-based
-sudo zypper remove firegila      # SUSE-based
-sudo pacman -Rns firegila        # Arch-based
+sudo apt remove <package>         # Debian-based
+sudo dnf remove <package>         # Fedora/RHEL-based
+sudo zypper remove <package>      # SUSE-based
+sudo pacman -Rns <package>        # Arch-based
 ```
 
 This removes the app itself, not the repository. If you removed the repository
