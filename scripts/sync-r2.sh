@@ -17,12 +17,17 @@ main() {
   log "Uploading ${REPO_DIR#"$ROOT_DIR"/}/ -> ${R2_REMOTE}:${R2_BUCKET}"
   info "rclone sync --copy-links --checksum --delete"
 
+  # The custom domain is proxied by Cloudflare. Set Cache-Control on the objects
+  # themselves (bucket-scoped, no zone-wide Cache Rule) so InRelease, repomd.xml
+  # and ttp-pkgs.db are never served stale. R2 egress is free, so revalidation
+  # has no cost.
   rclone sync "$REPO_DIR" "${R2_REMOTE}:${R2_BUCKET}" \
     --copy-links \
     --checksum \
     --delete \
     --transfers "${R2_TRANSFERS:-8}" \
     --checkers "${R2_CHECKERS:-16}" \
+    --header-upload "Cache-Control: no-cache" \
     --stats-one-line \
     --stats 10s
 
