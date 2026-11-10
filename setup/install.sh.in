@@ -91,6 +91,7 @@ Server = $BASE_URL/arch/\$arch
 EOF
     fi
     pacman -Sy
+    echo "Note: run 'sudo pacman -Syu' before installing packages." >&2
     ;;
 
   *)

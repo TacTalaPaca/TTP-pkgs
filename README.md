@@ -111,7 +111,7 @@ sudo pacman-key --add /tmp/ttp-pkgs.asc
 sudo pacman-key --lsign-key "$FPR"
 printf '\n[ttp-pkgs]\nSigLevel = Optional DatabaseRequired\nServer = https://pkgs.tactalapaca.com/arch/$arch\n' \
   | sudo tee -a /etc/pacman.conf
-sudo pacman -Sy
+sudo pacman -Syu
 ```
 
 Remove the repository:
@@ -121,7 +121,7 @@ FPR=$(curl -fsSL https://pkgs.tactalapaca.com/keys/ttp-pkgs.asc \
   | gpg --with-colons --show-keys | awk -F: '/^fpr:/{print $10; exit}')
 sudo pacman-key --delete "$FPR" 2>/dev/null || true
 sudo sed -i '/^\[ttp-pkgs\]/,/^$/d' /etc/pacman.conf
-sudo pacman -Sy
+sudo pacman -Syu
 ```
 
 ---
