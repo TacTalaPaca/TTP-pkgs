@@ -67,7 +67,9 @@ ensure_repo_dirs() {
 # Replace the contents of a marker block inside a file.
 #   update_block FILE START_MARKER END_MARKER CONTENT_FILE
 update_block() {
-  local file=$1 start=$2 end=$3 content=$4 tmp
+  local file=$1 start=$2 end=$3 content=$4 tmp mode
+  # mktemp creates 0600 files; keep the original mode when replacing it.
+  mode="$(stat -c '%a' "$file" 2>/dev/null || echo 644)"
   tmp="$(mktemp)"
   awk -v start="$start" -v end="$end" -v content="$content" '
     index($0, start) {
@@ -81,4 +83,5 @@ update_block() {
     !skip { print }
   ' "$file" > "$tmp"
   mv "$tmp" "$file"
+  chmod "$mode" "$file"
 }
