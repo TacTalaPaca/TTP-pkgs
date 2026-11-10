@@ -26,13 +26,14 @@ One command; it detects your distribution:
 curl -fsSL https://pkgs.tactalapaca.com/setup/install.sh | sudo bash
 ```
 
-Remove it:
+Remove the repository:
 
 ```bash
 curl -fsSL https://pkgs.tactalapaca.com/setup/uninstall.sh | sudo bash
 ```
 
-Removing the repository does **not** uninstall software that came from it.
+Removing the repository does **not** uninstall installed packages. To remove
+an app, use the commands in [Packages](#packages).
 
 ---
 
@@ -51,7 +52,7 @@ echo "deb [signed-by=/etc/apt/keyrings/ttp-pkgs.asc] https://pkgs.tactalapaca.co
 sudo apt update
 ```
 
-Remove:
+Remove the repository:
 
 ```bash
 sudo rm -f /etc/apt/sources.list.d/ttp-pkgs.list /etc/apt/keyrings/ttp-pkgs.asc
@@ -81,7 +82,7 @@ sudo dnf install -y dnf-plugins-core
 sudo dnf config-manager --add-repo https://pkgs.tactalapaca.com/rpm/ttp-pkgs.repo
 ```
 
-Remove (both DNF versions):
+Remove the repository (both DNF versions):
 
 ```bash
 sudo rm -f /etc/yum.repos.d/ttp-pkgs.repo
@@ -95,7 +96,7 @@ sudo zypper addrepo -f https://pkgs.tactalapaca.com/rpm/ttp-pkgs.repo
 sudo zypper --gpg-auto-import-keys refresh
 ```
 
-Remove:
+Remove the repository:
 
 ```bash
 sudo zypper removerepo ttp-pkgs
@@ -113,7 +114,7 @@ printf '\n[ttp-pkgs]\nSigLevel = Optional DatabaseRequired\nServer = https://pkg
 sudo pacman -Sy
 ```
 
-Remove:
+Remove the repository:
 
 ```bash
 FPR=$(curl -fsSL https://pkgs.tactalapaca.com/keys/ttp-pkgs.asc \
@@ -133,24 +134,29 @@ sudo pacman -Sy
 | `firegila` | **`0.1.3`** | `0.1.3`, `0.1.2` | deb, rpm, arch |
 <!-- PACKAGES:END -->
 
-These are normal system packages. Install one with your package manager
-(replace `<package>` with a name from the table):
+These are normal system packages. Install one with your package manager.
+Replace `firegila` with the package name from the table:
 
 ```bash
-sudo apt install <package>        # Debian-based
-sudo dnf install <package>        # Fedora/RHEL-based
-sudo zypper install <package>     # SUSE-based
-sudo pacman -S <package>          # Arch-based
+sudo apt install firegila        # Debian-based
+sudo dnf install firegila        # Fedora/RHEL-based
+sudo zypper install firegila     # SUSE-based
+sudo pacman -S firegila          # Arch-based
 ```
 
-Remove it the same way:
+Uninstall it the same way:
 
 ```bash
-sudo apt remove <package>         # Debian-based
-sudo dnf remove <package>         # Fedora/RHEL-based
-sudo zypper remove <package>      # SUSE-based
-sudo pacman -Rns <package>        # Arch-based
+sudo apt remove firegila         # Debian-based
+sudo dnf remove firegila         # Fedora/RHEL-based
+sudo zypper remove firegila      # SUSE-based
+sudo pacman -Rns firegila        # Arch-based
 ```
+
+This removes the app itself, not the repository. If you removed the repository
+first, the app is still installed and can still be removed this way. The
+package manager keeps its own local record of installed packages, so it does
+not need the repository to uninstall them.
 
 Updates work like any other package: run your normal system upgrade command.
 
