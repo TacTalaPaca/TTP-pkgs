@@ -1,9 +1,9 @@
 # TTP pkgs
 
-<p align="center">
+<p align="left">
   <a href="https://github.com/sponsors/TacTalaPaca">
-    <img alt="Sponsor TacTalaPaca" height="40"
-         src="https://img.shields.io/badge/Sponsor_TacTalaPaca_%E2%9D%A4%EF%B8%8F-57606a?style=for-the-badge">
+    <img alt="Sponsor TacTalaPaca" height="32"
+         src="https://img.shields.io/badge/Sponsor_TacTalaPaca-57606a?style=for-the-badge&logo=githubsponsors&logoColor=white">
   </a>
 </p>
 
