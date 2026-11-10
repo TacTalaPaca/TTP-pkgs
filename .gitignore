@@ -5,12 +5,10 @@
 repo/
 
 # ---------------------------------------------------------------------------
-# Staged build artifacts (incoming packages). This is a local drop zone only:
-# nothing inside it is versioned. The originals live in each project's own
-# packages/<version>/ directory.
+# Staged build artifacts (incoming packages). Local drop zone only: the whole
+# directory is ignored. publish.sh creates it if it does not exist.
 # ---------------------------------------------------------------------------
-packages/*
-!packages/.gitkeep
+packages/
 
 # Local scratch space
 .tmp/
