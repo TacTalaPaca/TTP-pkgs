@@ -137,19 +137,19 @@ These are normal system packages. Install one with your package manager
 (replace `<package>` with a name from the table):
 
 ```bash
-sudo apt install <package>        # Debian/Ubuntu
-sudo dnf install <package>        # Fedora/RHEL
-sudo zypper install <package>     # openSUSE
-sudo pacman -S <package>          # Arch
+sudo apt install <package>        # Debian-based
+sudo dnf install <package>        # Fedora/RHEL-based
+sudo zypper install <package>     # SUSE-based
+sudo pacman -S <package>          # Arch-based
 ```
 
 Remove it the same way:
 
 ```bash
-sudo apt remove <package>
-sudo dnf remove <package>
-sudo zypper remove <package>
-sudo pacman -Rns <package>
+sudo apt remove <package>         # Debian-based
+sudo dnf remove <package>         # Fedora/RHEL-based
+sudo zypper remove <package>      # SUSE-based
+sudo pacman -Rns <package>        # Arch-based
 ```
 
 Updates work like any other package: run your normal system upgrade command.
