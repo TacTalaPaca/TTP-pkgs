@@ -33,12 +33,14 @@ Status, verification and maintenance notes.
 - [x] Fixed Firegila Arch deps: `libgbm` -> `mesa`, dropped `at-spi2-atk`
 - [x] Real-client tests: Debian 13, Fedora 45, RHEL 9 (EPEL), openSUSE Tumbleweed/Leap 16, Arch Linux
 - [x] Public GitHub repo `TacTalaPaca/TTP-pkgs` created and pushed
+- [x] Retention: all versions in `packages/`, newest `KEEP_VERSIONS=2` in the repo
+- [x] README: compatibility table and install/remove examples in Packages
 
 ## Verified
 
 - Debian 13: `apt-get update`, `apt-cache policy`, `apt-get download`, `apt-get install -s`
 - Fedora 45: key auto-import, `dnf download --resolve` (286 packages)
-- RHEL 9 (AlmaLinux): resolves fully with EPEL (195 packages)
+- RHEL 9: resolves fully with EPEL (195 packages)
 - openSUSE Tumbleweed: 107 packages resolve
 - openSUSE Leap 16: 103 packages resolve
 - Arch: `pacman -Si`, `pacman -Sp` (105 packages), `pacman -Sw`
@@ -50,7 +52,8 @@ Status, verification and maintenance notes.
 
 - New release: copy the `.deb`, `.rpm` and `.pkg.tar.zst` into
   `packages/<app>/<version>/` (local only, gitignored), then run
-  `./scripts/publish.sh --sync`, commit and push.
+  `./scripts/publish.sh --sync`. The repo keeps the newest `KEEP_VERSIONS`
+  (default 2); older files stay in `packages/`.
 - After a reboot the GPG cache is gone: run `./scripts/unlock-key.sh` once
   before publishing.
 - Prune old versions: `./scripts/prune.sh <app> <keep>` then publish.

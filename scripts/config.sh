@@ -9,6 +9,9 @@ REPO_TITLE="${REPO_TITLE:-TTP pkgs}"
 ORIGIN="${ORIGIN:-TTP-pkgs}"
 BASE_URL="${BASE_URL:-https://pkgs.tactalapaca.com}"
 
+# How many versions of each package to keep in the published repo.
+KEEP_VERSIONS="${KEEP_VERSIONS:-2}"
+
 # APT layout
 APT_SUITE="${APT_SUITE:-stable}"
 APT_COMPONENT="${APT_COMPONENT:-main}"

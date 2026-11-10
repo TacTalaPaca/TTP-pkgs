@@ -55,7 +55,7 @@ case "$IDS" in
     dnf -y makecache >/dev/null
     if ! dnf -q repoquery --available --qf '%{name}' libcloudproviders 2>/dev/null \
       | grep -qx libcloudproviders; then
-      echo "Note: RHEL/Rocky/Alma need EPEL for libcloudproviders:" >&2
+      echo "Note: RHEL-based systems need EPEL for libcloudproviders:" >&2
       echo "      dnf install -y epel-release" >&2
     fi
     ;;

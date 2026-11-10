@@ -19,17 +19,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-_keep_max() {
-  local -n ver_ref=$1
-  local name=$2 new=$3 current
-  if [[ -z "${ver_ref[$name]:-}" ]]; then
-    ver_ref[$name]="$new"
-    return 0
-  fi
-  current="${ver_ref[$name]}"
-  ver_ref[$name]="$(printf '%s\n%s\n' "$current" "$new" | sort -V | tail -n1)"
-}
-
 # Drop packaging revisions for display: 0.1.3-1 -> 0.1.3
 _strip_rev() {
   printf '%s\n' "${1%-[0-9]*}"
@@ -43,7 +32,7 @@ _arch_version() {
 }
 
 _render_packages() {
-  declare -A ver=()
+  declare -A versions=()
   declare -A fmt=()
   local f name v
 
@@ -52,7 +41,7 @@ _render_packages() {
     name="$(dpkg-deb -f "$f" Package 2>/dev/null || true)"
     v="$(_strip_rev "$(dpkg-deb -f "$f" Version 2>/dev/null || true)")"
     [[ -n "$name" && -n "$v" ]] || continue
-    _keep_max ver "$name" "$v"
+    versions["$name"]+="$v "
     fmt["$name"]+="deb "
   done
 
@@ -60,7 +49,7 @@ _render_packages() {
     name="$(rpm -qp --qf '%{NAME}' "$f" 2>/dev/null || true)"
     v="$(rpm -qp --qf '%{VERSION}' "$f" 2>/dev/null || true)"
     [[ -n "$name" && -n "$v" ]] || continue
-    _keep_max ver "$name" "$v"
+    versions["$name"]+="$v "
     fmt["$name"]+="rpm "
   done
 
@@ -70,26 +59,35 @@ _render_packages() {
       | awk -F': ' '/^Name[[:space:]]*:/{print $2; exit}')"
     v="$(_arch_version "$f")"
     [[ -n "$name" && -n "$v" ]] || continue
-    _keep_max ver "$name" "$v"
+    versions["$name"]+="$v "
     fmt["$name"]+="arch "
   done
   shopt -u nullglob
 
-  printf '| Package | Latest version | Formats |\n'
-  printf '| --- | --- | --- |\n'
+  printf '| Package | Latest | Available versions | Formats |\n'
+  printf '| --- | --- | --- | --- |\n'
 
-  if [[ ${#ver[@]} -eq 0 ]]; then
-    printf '| _none yet_ | — | — |\n'
+  if [[ ${#versions[@]} -eq 0 ]]; then
+    printf '| _none yet_ | — | — | — |\n'
     return 0
   fi
 
-  local pkg formats
-  for pkg in $(printf '%s\n' "${!ver[@]}" | sort); do
+  local pkg vers latest available formats
+  for pkg in $(printf '%s\n' "${!versions[@]}" | sort); do
+    vers="$(printf '%s\n' ${versions[$pkg]} | awk '
+      NF && !seen[$0]++
+    ' | sort -Vr)"
+    latest="$(printf '%s\n' "$vers" | head -n1)"
+    available="$(printf '%s\n' "$vers" | awk '
+      { out = out (out ? ", " : "") "`" $0 "`" }
+      END { print out }
+    ')"
+
     formats="$(printf '%s\n' ${fmt[$pkg]} | awk '
       NF && !seen[$0]++ { out = out (out ? ", " : "") $0 }
       END { print out }
     ')"
-    printf '| `%s` | `%s` | %s |\n' "$pkg" "${ver[$pkg]}" "$formats"
+    printf '| `%s` | **`%s`** | %s | %s |\n' "$pkg" "$latest" "$available" "$formats"
   done
 }
 

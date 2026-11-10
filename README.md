@@ -6,8 +6,17 @@ Repository base URL: **https://pkgs.tactalapaca.com**
 
 Source and packaging scripts: **https://github.com/TacTalaPaca/TTP-pkgs** (public)
 
-Supported: Debian/Ubuntu (`.deb`), Fedora/RHEL/openSUSE (`.rpm`), Arch
-(`.pkg.tar.zst`). Architectures: `x86_64` / `amd64`.
+## Compatibility
+
+| Format | Works on |
+| --- | --- |
+| `.deb` | Debian-based distributions |
+| `.rpm` | Fedora-based, RHEL-based and SUSE-based distributions |
+| pacman | Arch-based distributions |
+
+RHEL 9 needs EPEL (for `libcloudproviders`). Tested on Debian 13, Fedora 45,
+RHEL 9, openSUSE Tumbleweed/Leap 16, and Arch Linux. Architectures: `x86_64` /
+`amd64` only.
 
 ## Install the repository
 
@@ -31,7 +40,7 @@ Removing the repository does **not** uninstall software that came from it.
 
 Prefer to do it manually? These are the same steps.
 
-### Debian / Ubuntu / Mint / Pop!_OS
+### Debian-based
 
 ```bash
 sudo install -d -m 0755 /etc/apt/keyrings
@@ -49,7 +58,7 @@ sudo rm -f /etc/apt/sources.list.d/ttp-pkgs.list /etc/apt/keyrings/ttp-pkgs.asc
 sudo apt update
 ```
 
-### Fedora (DNF5)
+### Fedora-based (DNF5)
 
 ```bash
 sudo dnf config-manager addrepo --from-repofile=https://pkgs.tactalapaca.com/rpm/ttp-pkgs.repo
@@ -57,10 +66,9 @@ sudo dnf config-manager addrepo --from-repofile=https://pkgs.tactalapaca.com/rpm
 
 If `config-manager` is missing: `sudo dnf install -y dnf5-plugins`.
 
-### RHEL / Rocky / AlmaLinux (DNF4)
+### RHEL-based (DNF4)
 
-On RHEL 9 / AlmaLinux 9 / Rocky 9, enable EPEL first (it provides
-`libcloudproviders`):
+On RHEL-based systems, enable EPEL first (it provides `libcloudproviders`):
 
 ```bash
 sudo dnf install -y epel-release
@@ -80,7 +88,7 @@ sudo rm -f /etc/yum.repos.d/ttp-pkgs.repo
 sudo dnf clean all
 ```
 
-### openSUSE / SLES
+### SUSE-based
 
 ```bash
 sudo zypper addrepo -f https://pkgs.tactalapaca.com/rpm/ttp-pkgs.repo
@@ -93,7 +101,7 @@ Remove:
 sudo zypper removerepo ttp-pkgs
 ```
 
-### Arch / EndeavourOS / Manjaro
+### Arch-based
 
 ```bash
 curl -fsSL https://pkgs.tactalapaca.com/keys/ttp-pkgs.asc -o /tmp/ttp-pkgs.asc
@@ -120,10 +128,31 @@ sudo pacman -Sy
 ## Packages
 
 <!-- PACKAGES:START -->
-| Package | Latest version | Formats |
-| --- | --- | --- |
-| `firegila` | `0.1.3` | deb, rpm, arch |
+| Package | Latest | Available versions | Formats |
+| --- | --- | --- | --- |
+| `firegila` | **`0.1.3`** | `0.1.3`, `0.1.2` | deb, rpm, arch |
 <!-- PACKAGES:END -->
+
+These are normal system packages. Install one with your package manager
+(replace `<package>` with a name from the table):
+
+```bash
+sudo apt install <package>        # Debian/Ubuntu
+sudo dnf install <package>        # Fedora/RHEL
+sudo zypper install <package>     # openSUSE
+sudo pacman -S <package>          # Arch
+```
+
+Remove it the same way:
+
+```bash
+sudo apt remove <package>
+sudo dnf remove <package>
+sudo zypper remove <package>
+sudo pacman -Rns <package>
+```
+
+Updates work like any other package: run your normal system upgrade command.
 
 ---
 
@@ -139,16 +168,3 @@ curl -fsSL https://pkgs.tactalapaca.com/keys/ttp-pkgs.asc | gpg --show-keys --wi
 
 The indexes are signed with this key. RPM packages are also signed
 individually.
-
----
-
-## Uninstalling packages
-
-Use your package manager:
-
-```bash
-sudo apt purge <package>       # Debian/Ubuntu
-sudo dnf remove <package>      # Fedora/RHEL
-sudo zypper remove <package>   # openSUSE
-sudo pacman -Rns <package>     # Arch
-```

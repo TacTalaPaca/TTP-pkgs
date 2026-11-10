@@ -63,6 +63,23 @@ _copy_arch() {
   info "arch  $(basename "$f") -> ${dest#"$ROOT_DIR"/}/"
 }
 
+_dir_version() {
+  local dir=$1 f
+  for f in "$dir"/*.deb; do
+    [[ -f "$f" ]] && { dpkg-deb -f "$f" Version; return 0; }
+  done
+  for f in "$dir"/*.rpm; do
+    [[ -f "$f" ]] && { rpm -qp --qf '%{VERSION}-%{RELEASE}' "$f" 2>/dev/null; return 0; }
+  done
+  for f in "$dir"/*.pkg.tar.*; do
+    [[ -f "$f" && "$f" != *.sig ]] || continue
+    pacman -Qip "$f" 2>/dev/null \
+      | awk -F': ' '/^Version[[:space:]]*:/{print $2; exit}'
+    return 0
+  done
+  basename "$dir"
+}
+
 _render() {
   local src=$1 dst=$2 mode=$3
   sed \
@@ -119,9 +136,19 @@ main() {
   ensure_repo_dirs
 
   if [[ ${#sources[@]} -eq 0 ]]; then
-    mapfile -t sources < <(
-      find "$PACKAGES_DIR" -mindepth 2 -maxdepth 2 -type d 2>/dev/null | sort
-    )
+    local appdir vdir ver
+    local -a entries=()
+    for appdir in "$PACKAGES_DIR"/*/; do
+      [[ -d "$appdir" ]] || continue
+      entries=()
+      while IFS= read -r vdir; do
+        entries+=("$(_dir_version "$vdir")"$'\t'"$vdir")
+      done < <(find "$appdir" -mindepth 1 -maxdepth 1 -type d | sort)
+      [[ ${#entries[@]} -gt 0 ]] || continue
+      while IFS=$'\t' read -r ver vdir; do
+        sources+=("$vdir")
+      done < <(printf '%s\n' "${entries[@]}" | sort -V -k1,1 | tail -n "$KEEP_VERSIONS")
+    done
   fi
 
   [[ ${#sources[@]} -gt 0 ]] || die "no package directories found (expected e.g. packages/<app>/<version>/)"
@@ -142,6 +169,9 @@ main() {
   done
 
   [[ "$copied" -gt 0 ]] || die "no supported packages found (.deb, .rpm, .pkg.tar.*)"
+
+  log "Applying version retention (keep $KEEP_VERSIONS)"
+  "$SCRIPT_DIR/prune.sh" --repo-only --all --keep "$KEEP_VERSIONS" --yes
 
   log "Rebuilding indexes"
   "$SCRIPT_DIR/index-apt.sh"
