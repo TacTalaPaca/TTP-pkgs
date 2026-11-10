@@ -29,16 +29,23 @@ Current state and remaining work, updated after the rename to TTP-pkgs on 2026-1
 - [x] Signing key created: `49E649426C9D967D67CAC995CEF97BF527E017C9`
 - [x] R2 API token created (Object Read & Write, bucket `ttp-pkgs`)
 - [x] rclone remote `ttp-pkgs:` configured and verified
+- [x] Firegila 0.1.3 published (`deb`, `rpm`, `pacman`)
+- [x] Fixed Firegila Arch deps: `libgbm` -> `mesa`, dropped `at-spi2-atk`
+- [x] Real-client tests: Debian 13, Fedora 45, Arch Linux
+- [x] Public GitHub repo `TacTalaPaca/TTP-pkgs` created and pushed
+
+## Verified
+
+- Debian 13: `apt-get update`, `apt-cache policy`, `apt-get download`, `apt-get install -s`
+- Fedora 45: key auto-import, `dnf download --resolve` (286 packages)
+- Arch: `pacman -Si`, `pacman -Sp` (105 packages), `pacman -Sw`
+- Live signatures: APT `InRelease`, RPM `repomd.xml`, pacman `ttp-pkgs.db`
+- `Cache-Control: no-cache`, `cf-cache-status: DYNAMIC`
+- Main site: apex `200`, `www` `301` -> apex (unchanged)
 
 ## Remaining
 
-1. [ ] Copy Firegila 0.1.3 into `packages/firegila/0.1.3/` — agent
-2. [ ] Publish — `./scripts/publish.sh --sync` — agent
-3. [ ] Verify — `./scripts/verify.sh` + `curl` the public URLs — agent
-4. [ ] Install `github-cli` (agent, sudo popup), then `gh auth login` — **you**
-5. [ ] Create the public GitHub repo `TTP-pkgs` and push — agent
-6. [ ] Optional: distrobox end-to-end test (`apt` / `dnf` / `pacman`)
-7. [ ] Optional (later): landing page at `https://pkgs.tactalapaca.com/`
+1. [ ] Optional (later): landing page at `https://pkgs.tactalapaca.com/`
 
 ## Notes
 

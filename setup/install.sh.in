@@ -51,6 +51,8 @@ case "$IDS" in
       fi
     fi
     dnf -q clean all >/dev/null 2>&1 || true
+    # Import the repo key and validate metadata immediately.
+    dnf -y makecache >/dev/null
     ;;
 
   *suse*|*opensuse*)
@@ -69,8 +71,12 @@ case "$IDS" in
     tmp="$(mktemp)"
     trap 'rm -f "$tmp"' EXIT
     curl -fsSL "$KEY_URL" -o "$tmp"
+    # A minimal container may have an empty keyring with no local signing key.
+    if [[ -z "$(ls -A /etc/pacman.d/gnupg/private-keys-v1.d 2>/dev/null)" ]]; then
+      pacman-key --init
+    fi
     pacman-key --add "$tmp" >/dev/null 2>&1 || true
-    pacman-key --lsign-key "$KEY_FPR" >/dev/null 2>&1 || true
+    pacman-key --lsign-key "$KEY_FPR" >/dev/null
     if ! grep -q "^\[$REPO_NAME\]" /etc/pacman.conf; then
       cat >> /etc/pacman.conf <<EOF
 
