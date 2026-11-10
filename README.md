@@ -1,5 +1,7 @@
 # TTP pkgs
 
+[Sponsor TacTalaPaca ❤︎](https://github.com/sponsors/TacTalaPaca)
+
 Native Linux packages for TacTalaPaca software.
 
 Repository base URL: **https://pkgs.tactalapaca.com**
