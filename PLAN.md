@@ -43,6 +43,16 @@ Current state and remaining work, updated after the rename to TTP-pkgs on 2026-1
 - `Cache-Control: no-cache`, `cf-cache-status: DYNAMIC`
 - Main site: apex `200`, `www` `301` -> apex (unchanged)
 
+## Maintenance
+
+- New release: copy the `.deb`, `.rpm` and `.pkg.tar.zst` into
+  `packages/<app>/<version>/`, then run `./scripts/publish.sh --sync`,
+  commit and push.
+- After a reboot the GPG cache is gone: run `./scripts/unlock-key.sh` once
+  before publishing.
+- Prune old versions: `./scripts/prune.sh <app> <keep>` then publish.
+- Health check: `./scripts/verify.sh`.
+
 ## Remaining
 
 1. [ ] Optional (later): landing page at `https://pkgs.tactalapaca.com/`
