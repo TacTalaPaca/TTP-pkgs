@@ -56,6 +56,7 @@ resolve_key() {
 
 ensure_repo_dirs() {
   mkdir -p \
+    "$PACKAGES_DIR" \
     "$REPO_DIR/apt/pool/$APT_COMPONENT" \
     "$REPO_DIR/rpm" \
     "$REPO_DIR/arch" \

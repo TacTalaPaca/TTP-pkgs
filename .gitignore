@@ -5,18 +5,12 @@
 repo/
 
 # ---------------------------------------------------------------------------
-# Staged build artifacts (incoming packages). Keep BUILDINFO/SHA256SUMS in git
-# for provenance, but never the binaries.
+# Staged build artifacts (incoming packages). This is a local drop zone only:
+# nothing inside it is versioned. The originals live in each project's own
+# packages/<version>/ directory.
 # ---------------------------------------------------------------------------
-packages/**/*.deb
-packages/**/*.rpm
-packages/**/*.pkg.tar.*
-packages/**/*.AppImage
-packages/**/*.tar.*
-packages/**/*.sig
-packages/**/*.zst
-packages/**/*.xz
-packages/**/*.gz
+packages/*
+!packages/.gitkeep
 
 # Local scratch space
 .tmp/

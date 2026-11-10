@@ -46,8 +46,8 @@ Current state and remaining work, updated after the rename to TTP-pkgs on 2026-1
 ## Maintenance
 
 - New release: copy the `.deb`, `.rpm` and `.pkg.tar.zst` into
-  `packages/<app>/<version>/`, then run `./scripts/publish.sh --sync`,
-  commit and push.
+  `packages/<app>/<version>/` (local only, gitignored), then run
+  `./scripts/publish.sh --sync`, commit and push.
 - After a reboot the GPG cache is gone: run `./scripts/unlock-key.sh` once
   before publishing.
 - Prune old versions: `./scripts/prune.sh <app> <keep>` then publish.
