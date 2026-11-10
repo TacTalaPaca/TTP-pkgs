@@ -1,6 +1,11 @@
 # TTP pkgs
 
-[Sponsor TacTalaPaca ❤︎](https://github.com/sponsors/TacTalaPaca)
+<p align="center">
+  <a href="https://github.com/sponsors/TacTalaPaca">
+    <img alt="Sponsor TacTalaPaca" height="40"
+         src="https://img.shields.io/badge/Sponsor_TacTalaPaca_%E2%9D%A4%EF%B8%8F-57606a?style=for-the-badge">
+  </a>
+</p>
 
 Native Linux packages for TacTalaPaca software.
 
