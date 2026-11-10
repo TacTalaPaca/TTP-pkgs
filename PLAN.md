@@ -26,20 +26,19 @@ Current state and remaining work, updated after the rename to TTP-pkgs on 2026-1
 - [x] DNS before/after diff: only new CNAME `pkgs` → `public.r2.dev`; apex/www/MX/TXT unchanged
 - [x] `r2.dev` public development URL left disabled (custom domain only)
 - [x] Uploads set `Cache-Control: no-cache` at the object level (no zone-wide rules)
+- [x] Signing key created: `49E649426C9D967D67CAC995CEF97BF527E017C9`
+- [x] R2 API token created (Object Read & Write, bucket `ttp-pkgs`)
+- [x] rclone remote `ttp-pkgs:` configured and verified
 
 ## Remaining
 
-1. [ ] Create the signing key — `./scripts/init-key.sh`
-       (agent runs it; you enter the passphrase in the pinentry popup)
-2. [ ] Create an R2 API token: Object Read & Write, bucket `ttp-pkgs` — **you**
-3. [ ] Configure rclone — `./scripts/init-r2.sh` — **you**
-4. [ ] Copy Firegila 0.1.3 into `packages/firegila/0.1.3/` — agent
-5. [ ] Publish — `./scripts/publish.sh --sync` — agent
-6. [ ] Verify — `./scripts/verify.sh` + `curl` the public URLs — agent
-7. [ ] Install `github-cli` (agent, sudo popup), then `gh auth login` — **you**
-8. [ ] Create the public GitHub repo `TTP-pkgs` and push — agent
-9. [ ] Optional: distrobox end-to-end test (`apt` / `dnf` / `pacman`)
-10. [ ] Optional (later): landing page at `https://pkgs.tactalapaca.com/`
+1. [ ] Copy Firegila 0.1.3 into `packages/firegila/0.1.3/` — agent
+2. [ ] Publish — `./scripts/publish.sh --sync` — agent
+3. [ ] Verify — `./scripts/verify.sh` + `curl` the public URLs — agent
+4. [ ] Install `github-cli` (agent, sudo popup), then `gh auth login` — **you**
+5. [ ] Create the public GitHub repo `TTP-pkgs` and push — agent
+6. [ ] Optional: distrobox end-to-end test (`apt` / `dnf` / `pacman`)
+7. [ ] Optional (later): landing page at `https://pkgs.tactalapaca.com/`
 
 ## Notes
 

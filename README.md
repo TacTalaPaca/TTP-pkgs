@@ -112,7 +112,9 @@ sudo pacman -Sy
 ## Packages
 
 <!-- PACKAGES:START -->
-_No packages published yet._
+| Package | Latest version | Formats |
+| --- | --- | --- |
+| `firegila` | `0.1.3` | deb, rpm, arch |
 <!-- PACKAGES:END -->
 
 ---
@@ -120,7 +122,11 @@ _No packages published yet._
 ## Signing key
 
 <!-- KEY:START -->
-_Signing key not configured yet._
+Signing key fingerprint: `49E649426C9D967D67CAC995CEF97BF527E017C9`
+
+```bash
+curl -fsSL https://pkgs.tactalapaca.com/keys/ttp-pkgs.asc | gpg --show-keys --with-fingerprint
+```
 <!-- KEY:END -->
 
 Every repository index is signed with this key. Packages are protected by the
