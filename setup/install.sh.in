@@ -60,6 +60,17 @@ case "$IDS" in
     fi
     ;;
 
+  *suse*|*opensuse*)
+    echo "==> openSUSE/SUSE family detected"
+    REPO_URL="$BASE_URL/rpm/$REPO_NAME.repo"
+    if ! zypper --non-interactive addrepo -f "$REPO_URL" 2>/dev/null; then
+      if ! zypper --non-interactive modifyrepo -f "$REPO_NAME" 2>/dev/null; then
+        curl -fsSL "$REPO_URL" -o "/etc/zypp/repos.d/$REPO_NAME.repo"
+      fi
+    fi
+    zypper --non-interactive --gpg-auto-import-keys refresh
+    ;;
+
   *arch*|*manjaro*|*endeavouros*)
     echo "==> Arch family detected"
     tmp="$(mktemp)"
@@ -84,7 +95,7 @@ EOF
 
   *)
     echo "Unsupported distribution: ${PRETTY_NAME:-unknown}" >&2
-    echo "Supported: Debian/Ubuntu, Fedora/RHEL, Arch." >&2
+    echo "Supported: Debian/Ubuntu, Fedora/RHEL, openSUSE/SUSE, Arch." >&2
     exit 1
     ;;
 esac

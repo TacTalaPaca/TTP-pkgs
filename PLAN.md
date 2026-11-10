@@ -31,14 +31,16 @@ Status, verification and maintenance notes.
 - [x] rclone remote `ttp-pkgs:` configured and verified
 - [x] Firegila 0.1.3 published (`deb`, `rpm`, `pacman`)
 - [x] Fixed Firegila Arch deps: `libgbm` -> `mesa`, dropped `at-spi2-atk`
-- [x] Real-client tests: Debian 13, Fedora 45, RHEL 9 (with EPEL), Arch Linux
+- [x] Real-client tests: Debian 13, Fedora 45, RHEL 9 (EPEL), openSUSE Tumbleweed/Leap 16, Arch Linux
 - [x] Public GitHub repo `TacTalaPaca/TTP-pkgs` created and pushed
 
 ## Verified
 
 - Debian 13: `apt-get update`, `apt-cache policy`, `apt-get download`, `apt-get install -s`
 - Fedora 45: key auto-import, `dnf download --resolve` (286 packages)
-- RHEL 9 (AlmaLinux): resolves fully with EPEL (196 packages)
+- RHEL 9 (AlmaLinux): resolves fully with EPEL (195 packages)
+- openSUSE Tumbleweed: 107 packages resolve
+- openSUSE Leap 16: 103 packages resolve
 - Arch: `pacman -Si`, `pacman -Sp` (105 packages), `pacman -Sw`
 - Live signatures: APT `InRelease`, RPM `repomd.xml`, pacman `ttp-pkgs.db`
 - `Cache-Control: no-cache`, `cf-cache-status: DYNAMIC`
@@ -64,5 +66,5 @@ Status, verification and maintenance notes.
 - Secrets stay outside the repo: the private GPG key in `~/.gnupg`, the R2 secret
   in `~/.config/rclone/rclone.conf` (mode 600).
 - R2 free tier: 10 GB-month, free egress.
-- RPM targets Fedora and RHEL. openSUSE needs a separate RPM because its package
-  names differ.
+- One RPM serves Fedora, RHEL and openSUSE; its dependencies are sonames, not
+  distro-specific package names.

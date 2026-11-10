@@ -6,7 +6,7 @@ Repository base URL: **https://pkgs.tactalapaca.com**
 
 Source and packaging scripts: **https://github.com/TacTalaPaca/TTP-pkgs** (public)
 
-Supported: Debian/Ubuntu (`.deb`), Fedora/RHEL (`.rpm`), Arch
+Supported: Debian/Ubuntu (`.deb`), Fedora/RHEL/openSUSE (`.rpm`), Arch
 (`.pkg.tar.zst`). Architectures: `x86_64` / `amd64`.
 
 ## Install the repository
@@ -80,6 +80,19 @@ sudo rm -f /etc/yum.repos.d/ttp-pkgs.repo
 sudo dnf clean all
 ```
 
+### openSUSE / SLES
+
+```bash
+sudo zypper addrepo -f https://pkgs.tactalapaca.com/rpm/ttp-pkgs.repo
+sudo zypper --gpg-auto-import-keys refresh
+```
+
+Remove:
+
+```bash
+sudo zypper removerepo ttp-pkgs
+```
+
 ### Arch / EndeavourOS / Manjaro
 
 ```bash
@@ -136,5 +149,6 @@ Use your package manager:
 ```bash
 sudo apt purge <package>       # Debian/Ubuntu
 sudo dnf remove <package>      # Fedora/RHEL
+sudo zypper remove <package>   # openSUSE
 sudo pacman -Rns <package>     # Arch
 ```

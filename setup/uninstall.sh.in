@@ -32,6 +32,17 @@ case "$IDS" in
     dnf -q clean all >/dev/null 2>&1 || true
     ;;
 
+  *suse*|*opensuse*)
+    echo "==> Removing openSUSE/SUSE repository"
+    if command -v zypper >/dev/null 2>&1; then
+      zypper --non-interactive removerepo "$REPO_NAME" >/dev/null 2>&1 || true
+    fi
+    rm -f "/etc/zypp/repos.d/$REPO_NAME.repo"
+    if command -v zypper >/dev/null 2>&1; then
+      zypper --non-interactive refresh >/dev/null 2>&1 || true
+    fi
+    ;;
+
   *arch*|*manjaro*|*endeavouros*)
     echo "==> Removing Arch repository"
     if grep -q "^\[$REPO_NAME\]" /etc/pacman.conf; then
