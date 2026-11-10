@@ -1,0 +1,23 @@
+# ---------------------------------------------------------------------------
+# Generated repository tree. Published to Cloudflare R2, never committed.
+# GitHub blocks files larger than 100 MiB, so package binaries must stay out.
+# ---------------------------------------------------------------------------
+repo/
+
+# ---------------------------------------------------------------------------
+# Staged build artifacts (incoming packages). Keep BUILDINFO/SHA256SUMS in git
+# for provenance, but never the binaries.
+# ---------------------------------------------------------------------------
+packages/**/*.deb
+packages/**/*.rpm
+packages/**/*.pkg.tar.*
+packages/**/*.AppImage
+packages/**/*.tar.*
+packages/**/*.sig
+packages/**/*.zst
+packages/**/*.xz
+packages/**/*.gz
+
+# Local scratch space
+.tmp/
+*.log

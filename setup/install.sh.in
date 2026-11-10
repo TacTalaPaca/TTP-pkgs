@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# Add the TTP pkgs package repository to this system.
+set -euo pipefail
+
+BASE_URL="@BASE_URL@"
+REPO_NAME="@REPO_NAME@"
+KEY_FPR="@KEY_FPR@"
+KEY_URL="$BASE_URL/keys/$REPO_NAME.asc"
+
+if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
+  echo "This script must run as root:" >&2
+  echo "  curl -fsSL $BASE_URL/setup/install.sh | sudo bash" >&2
+  exit 1
+fi
+
+if [[ -r /etc/os-release ]]; then
+  # shellcheck disable=SC1091
+  . /etc/os-release
+fi
+IDS=" ${ID:-} ${ID_LIKE:-} "
+
+command -v curl >/dev/null 2>&1 || {
+  echo "curl is required" >&2
+  exit 1
+}
+
+case "$IDS" in
+  *debian*|*ubuntu*)
+    echo "==> Debian/Ubuntu family detected"
+    install -d -m 0755 /etc/apt/keyrings
+    curl -fsSL "$KEY_URL" -o "/etc/apt/keyrings/$REPO_NAME.asc"
+    chmod 0644 "/etc/apt/keyrings/$REPO_NAME.asc"
+    printf 'deb [signed-by=/etc/apt/keyrings/%s.asc] %s/apt @APT_SUITE@ @APT_COMPONENT@\n' \
+      "$REPO_NAME" "$BASE_URL" > "/etc/apt/sources.list.d/$REPO_NAME.list"
+    apt-get update
+    ;;
+
+  *fedora*|*rhel*|*centos*|*rocky*|*almalinux*)
+    echo "==> Fedora/RHEL family detected"
+    REPO_URL="$BASE_URL/rpm/$REPO_NAME.repo"
+    if command -v dnf5 >/dev/null 2>&1 \
+      || dnf --version 2>/dev/null | grep -qi '^dnf5'; then
+      # DNF5 (Fedora 41+)
+      if ! dnf config-manager addrepo --from-repofile="$REPO_URL" --overwrite 2>/dev/null; then
+        curl -fsSL "$REPO_URL" -o "/etc/yum.repos.d/$REPO_NAME.repo"
+      fi
+    else
+      # DNF4 (RHEL 8/9 and older Fedora)
+      if ! dnf config-manager --add-repo "$REPO_URL" 2>/dev/null; then
+        curl -fsSL "$REPO_URL" -o "/etc/yum.repos.d/$REPO_NAME.repo"
+      fi
+    fi
+    dnf -q clean all >/dev/null 2>&1 || true
+    ;;
+
+  *suse*|*opensuse*)
+    echo "==> openSUSE/SUSE family detected"
+    REPO_URL="$BASE_URL/rpm/$REPO_NAME.repo"
+    if ! zypper --non-interactive addrepo -f "$REPO_URL" 2>/dev/null; then
+      if ! zypper --non-interactive modifyrepo -f "$REPO_NAME" 2>/dev/null; then
+        curl -fsSL "$REPO_URL" -o "/etc/zypp/repos.d/$REPO_NAME.repo"
+      fi
+    fi
+    zypper --non-interactive --gpg-auto-import-keys refresh
+    ;;
+
+  *arch*|*manjaro*|*endeavouros*)
+    echo "==> Arch family detected"
+    tmp="$(mktemp)"
+    trap 'rm -f "$tmp"' EXIT
+    curl -fsSL "$KEY_URL" -o "$tmp"
+    pacman-key --add "$tmp" >/dev/null 2>&1 || true
+    pacman-key --lsign-key "$KEY_FPR" >/dev/null 2>&1 || true
+    if ! grep -q "^\[$REPO_NAME\]" /etc/pacman.conf; then
+      cat >> /etc/pacman.conf <<EOF
+
+[$REPO_NAME]
+SigLevel = Optional DatabaseRequired
+Server = $BASE_URL/arch/\$arch
+EOF
+    fi
+    pacman -Sy
+    ;;
+
+  *)
+    echo "Unsupported distribution: ${PRETTY_NAME:-unknown}" >&2
+    echo "Supported: Debian/Ubuntu, Fedora/RHEL, openSUSE/SUSE, Arch." >&2
+    exit 1
+    ;;
+esac
+
+echo
+echo "Repository '$REPO_NAME' added."
+echo "Install software with the normal package manager (apt / dnf / zypper / pacman)."

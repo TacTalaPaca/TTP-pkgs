@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Remove the TTP pkgs package repository from this system.
+# Installed packages are NOT removed.
+set -euo pipefail
+
+BASE_URL="@BASE_URL@"
+REPO_NAME="@REPO_NAME@"
+KEY_FPR="@KEY_FPR@"
+
+if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
+  echo "This script must run as root:" >&2
+  echo "  curl -fsSL $BASE_URL/setup/uninstall.sh | sudo bash" >&2
+  exit 1
+fi
+
+if [[ -r /etc/os-release ]]; then
+  # shellcheck disable=SC1091
+  . /etc/os-release
+fi
+IDS=" ${ID:-} ${ID_LIKE:-} "
+
+case "$IDS" in
+  *debian*|*ubuntu*)
+    echo "==> Removing Debian/Ubuntu repository"
+    rm -f "/etc/apt/sources.list.d/$REPO_NAME.list"
+    rm -f "/etc/apt/keyrings/$REPO_NAME.asc"
+    apt-get update
+    ;;
+
+  *fedora*|*rhel*|*centos*|*rocky*|*almalinux*)
+    echo "==> Removing Fedora/RHEL repository"
+    rm -f "/etc/yum.repos.d/$REPO_NAME.repo"
+    dnf -q clean all >/dev/null 2>&1 || true
+    ;;
+
+  *suse*|*opensuse*)
+    echo "==> Removing openSUSE/SUSE repository"
+    if command -v zypper >/dev/null 2>&1; then
+      zypper --non-interactive removerepo "$REPO_NAME" >/dev/null 2>&1 || true
+    fi
+    rm -f "/etc/zypp/repos.d/$REPO_NAME.repo"
+    if command -v zypper >/dev/null 2>&1; then
+      zypper --non-interactive refresh >/dev/null 2>&1 || true
+    fi
+    ;;
+
+  *arch*|*manjaro*|*endeavouros*)
+    echo "==> Removing Arch repository"
+    if grep -q "^\[$REPO_NAME\]" /etc/pacman.conf; then
+      tmp="$(mktemp)"
+      awk -v repo="$REPO_NAME" '
+        $0 == "[" repo "]" { skip = 1; next }
+        skip && /^\[/ { skip = 0 }
+        skip && /^[[:space:]]*$/ { skip = 0; next }
+        !skip { print }
+      ' /etc/pacman.conf > "$tmp"
+      cat "$tmp" > /etc/pacman.conf
+      rm -f "$tmp"
+    fi
+    if [[ -n "$KEY_FPR" ]]; then
+      pacman-key --delete "$KEY_FPR" >/dev/null 2>&1 || true
+    fi
+    pacman -Sy
+    ;;
+
+  *)
+    echo "Unsupported distribution: ${PRETTY_NAME:-unknown}" >&2
+    exit 1
+    ;;
+esac
+
+echo
+echo "Repository '$REPO_NAME' removed."
+echo "Installed packages were left in place. Remove them with your package manager if desired."
