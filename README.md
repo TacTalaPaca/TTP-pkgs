@@ -139,7 +139,7 @@ sudo pacman -Syu
 | Package | Latest | Available versions | Formats |
 | --- | --- | --- | --- |
 | `firegila` | **`1.2`** | `1.2`, `1.1` | deb, rpm, arch |
-| `verbaq` | **`1.1`** | `1.1` | deb, rpm, arch |
+| `verbaq` | **`1.2`** | `1.2`, `1.1` | deb, rpm, arch |
 <!-- PACKAGES:END -->
 
 These are normal system packages. Install one with your package manager.
