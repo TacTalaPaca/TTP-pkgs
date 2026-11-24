@@ -10,23 +10,24 @@
 ## 2. Layout
 
 ```
-packages/<app>/<version>/   local package drop, ignored by git
+pkgs/<app>/<version>/   local package archive, ignored by git
 repo/                       generated repository tree, ignored by git
 keys/                       public signing key
 scripts/                    publish, index, sign, sync and verify scripts
 setup/                      install and uninstall templates
 ```
 
-- `repo/` and `packages/` are generated or local data. Do not commit them.
+- `repo/` is generated. `pkgs/` is the local archive. Do not commit either.
 - `README.md` is tracked and contains generated marker blocks.
 - `AGENTS.md` is tracked and is the release rulebook.
 
 ## 3. Release rules
 
-- Publish a package only after the upstream release exists and its `BUILDINFO` records the release commit.
+- Publish a package only after the upstream release exists and the source is committed and tagged.
+- The upstream keeps only its current `dist/`. Every previous version must already be in `pkgs/<app>/<version>/`.
 - Use the package files from the upstream release. Do not rebuild them in this repository.
 - TTP pkgs hosts only `.deb`, `.rpm` and `.pkg.tar.zst` files.
-- Keep the newest two versions per package. `KEEP_VERSIONS=2` is the default.
+- Keep every version in `pkgs/`. The published repo also keeps every version by default. Set `KEEP_VERSIONS` to a positive number to prune.
 - Never hand edit the package table in `README.md`.
 - The table between `<!-- PACKAGES:START -->` and `<!-- PACKAGES:END -->` is generated from `repo/` by `scripts/gen-readme.sh`.
 - The key block between `<!-- KEY:START -->` and `<!-- KEY:END -->` is generated too.
@@ -41,17 +42,17 @@ Example for Firegila 1.1:
 cd /home/danuja/TacTalaPaca/TTP-pkgs
 
 # 1. Place the release packages in the ignored drop directory.
-install -d packages/firegila/1.1
-cp /home/danuja/TacTalaPaca/Code/Firegila/packages/1.1/firegila_1.1_amd64.deb \
-   /home/danuja/TacTalaPaca/Code/Firegila/packages/1.1/firegila-1.1-1.x86_64.rpm \
-   /home/danuja/TacTalaPaca/Code/Firegila/packages/1.1/firegila-1.1-1-x86_64.pkg.tar.zst \
-   packages/firegila/1.1/
+install -d pkgs/firegila/1.1
+cp /home/danuja/TacTalaPaca/Code/TTP-Browser/dist/firegila_1.1_amd64.deb \
+   /home/danuja/TacTalaPaca/Code/TTP-Browser/dist/firegila-1.1-1.x86_64.rpm \
+   /home/danuja/TacTalaPaca/Code/TTP-Browser/dist/firegila-1.1-1-x86_64.pkg.tar.zst \
+   pkgs/firegila/1.1/
 
 # 2. Unlock the signing key for this session.
 ./scripts/unlock-key.sh
 
 # 3. Rebuild indexes, sign metadata, prune old versions and regenerate README.
-./scripts/publish.sh packages/firegila/1.1
+./scripts/publish.sh pkgs/firegila/1.1
 
 # 4. Verify metadata, signatures and README output.
 ./scripts/verify.sh
@@ -72,7 +73,7 @@ grep -A 4 'PACKAGES:START' README.md
 
 ## 5. Pruning
 
-- `publish.sh` prunes to `KEEP_VERSIONS` automatically.
+- `publish.sh` prunes only when `KEEP_VERSIONS` is greater than 0. The default 0 keeps every version.
 - To inspect before deleting:
 
 ```sh
@@ -99,7 +100,7 @@ grep -A 4 'PACKAGES:START' README.md
 ## 7. Git
 
 - Commit only tracked files such as `README.md`, `AGENTS.md`, `scripts/`, `setup/` and `keys/ttp-pkgs.asc`.
-- Do not commit `repo/`, `packages/`, `.tmp/`, logs or private keys.
+- Do not commit `repo/`, `pkgs/`, `.tmp/`, logs or private keys.
 - Keep commit subjects short and mechanical.
 - Do not rewrite history without owner approval.
 - Do not push until the owner approves.
@@ -109,8 +110,8 @@ grep -A 4 'PACKAGES:START' README.md
 For every new Firegila release:
 
 1. Build and publish the upstream GitHub release first.
-2. Confirm `BUILDINFO` in the upstream package folder matches the release commit.
-3. Copy the deb, rpm and Arch package into `packages/firegila/<version>/`.
+2. Confirm the upstream release commit and tag match the package version.
+3. Copy only the deb, rpm and Arch package into `pkgs/firegila/<version>/`.
 4. Run the publish and verify steps above.
 5. Confirm the README Firegila row shows the new version.
 6. Sync to R2 only after verification.

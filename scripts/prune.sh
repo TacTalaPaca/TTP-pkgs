@@ -21,7 +21,7 @@ Usage:
   $(basename "$0") [--yes] [--repo-only] --all --keep <keep-count>
 
 Removes all but the newest <keep-count> versions. By default it scans both
-packages/ and repo/; --repo-only scans only the published repo.
+pkgs/ and repo/; --repo-only scans only the published repo.
 
 Without --yes it only prints what would be deleted.
 EOF
@@ -79,7 +79,10 @@ main() {
   fi
 
   [[ "$keep" =~ ^[0-9]+$ ]] || die "keep-count must be a number"
-  [[ "$keep" -ge 1 ]] || die "keep-count must be at least 1"
+  if [[ "$keep" -eq 0 ]]; then
+    log "keep-count 0, nothing to prune"
+    return 0
+  fi
 
   require_cmd dpkg-deb
   require_cmd rpm
@@ -87,7 +90,7 @@ main() {
 
   local -a roots=("$REPO_DIR")
   if [[ "$repo_only" -eq 0 ]]; then
-    roots=("$PACKAGES_DIR" "$REPO_DIR")
+    roots=("$PKGS_DIR" "$REPO_DIR")
   fi
 
   TMP_LIST="$(mktemp)"

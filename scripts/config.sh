@@ -10,7 +10,8 @@ ORIGIN="${ORIGIN:-TTP-pkgs}"
 BASE_URL="${BASE_URL:-https://pkgs.tactalapaca.com}"
 
 # How many versions of each package to keep in the published repo.
-KEEP_VERSIONS="${KEEP_VERSIONS:-2}"
+# 0 keeps every version.
+KEEP_VERSIONS="${KEEP_VERSIONS:-0}"
 
 # APT layout
 APT_SUITE="${APT_SUITE:-stable}"
@@ -22,7 +23,7 @@ R2_BUCKET="${R2_BUCKET:-$REPO_NAME}"
 
 # Paths (derived from this file's location, so scripts work from any cwd)
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-PACKAGES_DIR="$ROOT_DIR/packages"
+PKGS_DIR="$ROOT_DIR/pkgs"
 REPO_DIR="$ROOT_DIR/repo"
 KEYS_DIR="$ROOT_DIR/keys"
 SETUP_DIR="$ROOT_DIR/setup"

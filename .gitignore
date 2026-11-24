@@ -2,7 +2,7 @@
 repo/
 
 # Local drop zone for build artifacts.
-packages/
+pkgs/
 
 # Local scratch space
 .tmp/

@@ -12,7 +12,7 @@ usage() {
 Usage: $(basename "$0") [options] [PACKAGE_DIR ...]
 
 Copies .deb / .rpm / .pkg.tar.* files from PACKAGE_DIR (default:
-packages/<app>/<version>/) into repo/, rebuilds the APT, RPM and pacman
+pkgs/<app>/<version>/) into repo/, rebuilds the APT, RPM and pacman
 indexes, signs packages and metadata, regenerates README.md, and optionally
 uploads the repository to Cloudflare R2.
 
@@ -24,7 +24,7 @@ Options:
 
 Examples:
   ./scripts/publish.sh
-  ./scripts/publish.sh packages/firegila/0.1.3
+  ./scripts/publish.sh pkgs/firegila/0.1.3
   ./scripts/publish.sh --sync
 EOF
 }
@@ -138,20 +138,26 @@ main() {
   if [[ ${#sources[@]} -eq 0 ]]; then
     local appdir vdir ver
     local -a entries=()
-    for appdir in "$PACKAGES_DIR"/*/; do
+    for appdir in "$PKGS_DIR"/*/; do
       [[ -d "$appdir" ]] || continue
       entries=()
       while IFS= read -r vdir; do
         entries+=("$(_dir_version "$vdir")"$'\t'"$vdir")
       done < <(find "$appdir" -mindepth 1 -maxdepth 1 -type d | sort)
       [[ ${#entries[@]} -gt 0 ]] || continue
-      while IFS=$'\t' read -r ver vdir; do
-        sources+=("$vdir")
-      done < <(printf '%s\n' "${entries[@]}" | sort -V -k1,1 | tail -n "$KEEP_VERSIONS")
+      if [[ "$KEEP_VERSIONS" -eq 0 ]]; then
+        while IFS=$'\t' read -r ver vdir; do
+          sources+=("$vdir")
+        done < <(printf '%s\n' "${entries[@]}" | sort -V -k1,1)
+      else
+        while IFS=$'\t' read -r ver vdir; do
+          sources+=("$vdir")
+        done < <(printf '%s\n' "${entries[@]}" | sort -V -k1,1 | tail -n "$KEEP_VERSIONS")
+      fi
     done
   fi
 
-  [[ ${#sources[@]} -gt 0 ]] || die "no package directories found (expected e.g. packages/<app>/<version>/)"
+  [[ ${#sources[@]} -gt 0 ]] || die "no package directories found (expected e.g. pkgs/<app>/<version>/)"
 
   local src f copied=0
   for src in "${sources[@]}"; do
@@ -170,8 +176,12 @@ main() {
 
   [[ "$copied" -gt 0 ]] || die "no supported packages found (.deb, .rpm, .pkg.tar.*)"
 
-  log "Applying version retention (keep $KEEP_VERSIONS)"
-  "$SCRIPT_DIR/prune.sh" --repo-only --all --keep "$KEEP_VERSIONS" --yes
+  if [[ "$KEEP_VERSIONS" -gt 0 ]]; then
+    log "Applying version retention (keep $KEEP_VERSIONS)"
+    "$SCRIPT_DIR/prune.sh" --repo-only --all --keep "$KEEP_VERSIONS" --yes
+  else
+    log "Version retention disabled, keeping every version"
+  fi
 
   log "Rebuilding indexes"
   "$SCRIPT_DIR/index-apt.sh"
