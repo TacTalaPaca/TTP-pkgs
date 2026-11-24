@@ -138,7 +138,7 @@ sudo pacman -Syu
 <!-- PACKAGES:START -->
 | Package | Latest | Available versions | Formats |
 | --- | --- | --- | --- |
-| `firegila` | **`1.3`** | `1.3`, `1.2`, `1.1` | deb, rpm, arch |
+| `firegila` | **`1.4`** | `1.4`, `1.3`, `1.2`, `1.1` | deb, rpm, arch |
 | `verbaq` | **`1.3`** | `1.3`, `1.2`, `1.1` | deb, rpm, arch |
 <!-- PACKAGES:END -->
 
